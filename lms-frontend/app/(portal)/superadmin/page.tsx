@@ -1112,7 +1112,7 @@ export default function SuperAdminPortal() {
         return;
       }
 
-      const usersResponse = await api.get("superadmin/users", {
+      const usersResponse = await api.get("admin/users", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Device-Id": deviceId,
