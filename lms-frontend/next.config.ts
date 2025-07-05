@@ -35,6 +35,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     GOOGLE_DRIVE_DOCUMENT_FOLDER_ID:process.env.GOOGLE_DRIVE_DOCUMENT_FOLDER_ID,
     GOOGLE_COURSE_FOLDER_ID: process.env.GOOGLE_COURSE_FOLDER_ID,
+    SENTRY_DSN:process.env.SENTRY_DSN,
   },
   
 };
