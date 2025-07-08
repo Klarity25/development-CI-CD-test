@@ -19,6 +19,10 @@ jobs:
         ports:
           - 6379:6379
     steps:
+      - name: Debug - Show workspace structure
+        run: |
+          pwd
+          ls -R
       - name: Checkout code
         uses: actions/checkout@v4
 
