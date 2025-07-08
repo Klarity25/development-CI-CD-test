@@ -1,24 +1,43 @@
-name: Basic CI for LMS
+name: CI/CD Pipeline for LMS Frontend and Backend
 
 on:
   push:
-    branches: [staging]
+    branches:
+      - staging
   pull_request:
-    branches: [staging]
+    branches:
+      - staging
 
 jobs:
   check-services:
     runs-on: ubuntu-latest
+
     services:
       mongo:
         image: mongo:4.4
         ports:
           - 27017:27017
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Backend
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Debug - Show workspace structure
+        run: |
+          pwd
+          ls -l
+          ls -l lms-backend || echo "lms-backend not found"
+          ls -l lms-frontend || echo "lms-frontend not found"
+
       - name: Install backend dependencies
         run: |
           cd lms-backend
@@ -26,29 +45,23 @@ jobs:
 
       - name: Start backend server
         env:
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
           MONGO_URI: mongodb://localhost:27017/test
         run: |
           cd lms-backend
           npm start &
-          sleep 10
+          sleep 15
           curl --fail http://localhost:5001/api/health || exit 1
 
-      # Frontend
       - name: Install frontend dependencies
         run: |
           cd lms-frontend
           npm install
 
-      - name: Build frontend
-        run: |
-          cd lms-frontend
-          npm run build
-
       - name: Start frontend server
+        env:
+          NEXT_PUBLIC_API_URL: https://frontendtest-39565511862.asia-south2.run.app
         run: |
           cd lms-frontend
-          npm start &
-          sleep 10
+          PORT=3000 npm run start &
+          sleep 15
           curl --fail http://localhost:3000 || exit 1
