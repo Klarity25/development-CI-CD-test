@@ -10,10 +10,10 @@ jobs:
   check-services:
     runs-on: ubuntu-latest
     services:
-      mongo:
-        image: mongo:4.4
+      redis:
+        image: redis:7
         ports:
-          - 27017:27017
+          - 6379:6379
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
