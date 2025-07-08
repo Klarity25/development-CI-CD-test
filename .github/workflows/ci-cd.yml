@@ -17,12 +17,12 @@ jobs:
       # Backend
       - name: Install backend dependencies
         run: |
-          cd klaritilms/lms-backend
+          cd lms-backend
           npm install
 
       - name: Start backend server
         run: |
-          cd klaritilms/lms-backend
+          cd lms-backend
           npm start &
           sleep 10
           curl --fail http://localhost:5001/api/health || exit 1
@@ -30,17 +30,17 @@ jobs:
       # Frontend
       - name: Install frontend dependencies
         run: |
-          cd klaritilms/lms-frontend
+          cd lms-frontend
           npm install
 
       - name: Build frontend
         run: |
-          cd klaritilms/lms-frontend
+          cd lms-frontend
           npm run build
 
       - name: Start frontend server
         run: |
-          cd klaritilms/lms-frontend
+          cd lms-frontend
           npm start &
           sleep 10
           curl --fail http://localhost:3000 || exit 1
