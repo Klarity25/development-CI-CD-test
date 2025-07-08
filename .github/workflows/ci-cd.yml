@@ -1,0 +1,91 @@
+name: CI/CD Pipeline for LMS Frontend and Backend
+
+on:
+  push:
+    branches:
+      - staging
+  pull_request:
+    branches:
+      - staging
+
+jobs:
+  check-services:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Backend: Install dependencies and check if it runs
+      - name: Install backend dependencies
+        run: |
+          cd lms-backend
+          npm install
+
+      - name: Start backend server
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          SUPPORT_EMAIL: ${{ secrets.SUPPORT_EMAIL }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_PHONE_NUMBER: ${{ secrets.TWILIO_PHONE_NUMBER }}
+          TWILIO_WHATSAPP_NUMBER: ${{ secrets.TWILIO_WHATSAPP_NUMBER }}
+          BASE_URL: ${{ secrets.BASE_URL }}
+          PORT: 5001
+          REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          ZOOM_ACCOUNT_ID: ${{ secrets.ZOOM_ACCOUNT_ID }}
+          ZOOM_CLIENT_ID: ${{ secrets.ZOOM_CLIENT_ID }}
+          ZOOM_CLIENT_SECRET: ${{ secrets.ZOOM_CLIENT_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          GOOGLE_DRIVE_VIDEO_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_VIDEO_FOLDER_ID }}
+          GOOGLE_DRIVE_DOCUMENT_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_DOCUMENT_FOLDER_ID }}
+          GOOGLE_COURSE_FOLDER_ID: ${{ secrets.GOOGLE_COURSE_FOLDER_ID }}
+          UPLOAD_DIR: ./uploads
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          NODE_ENV: development
+        run: |
+          cd lms-backend
+          npm start & # Assumes 'start' runs 'node server.js'
+          sleep 15 # Wait for server to start
+          curl --fail http://localhost:5001/api/health || exit 1
+
+      # Frontend: Install dependencies, build, and check if it runs
+      - name: Install frontend dependencies
+        run: |
+          cd lms-frontend
+          npm install
+
+      - name: Build frontend
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096 # Handle memory for Next.js build
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+        run: |
+          cd lms-frontend
+          npm run build
+
+      - name: Start frontend server
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+        run: |
+          cd lms-frontend
+          PORT=3000 npm run start &
+          sleep 15 # Wait for server to start
+          curl --fail http://localhost:3000 || exit 1

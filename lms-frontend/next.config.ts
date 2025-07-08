@@ -39,7 +39,6 @@ const nextConfig: NextConfig = {
   experimental: {
     clientTraceMetadata: undefined, // Disable experimental feature
   },
-  telemetry: false, // Disable Next.js telemetry
 };
 
 export default withSentryConfig(nextConfig, {
