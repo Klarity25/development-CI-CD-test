@@ -10,6 +10,10 @@ jobs:
   check-services:
     runs-on: ubuntu-latest
     services:
+      mongo:
+        image: mongo:4.4
+        ports:
+          - 27017:27017
       redis:
         image: redis:7
         ports:
@@ -18,7 +22,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Backend
       - name: Install backend dependencies
         run: |
           cd lms-backend
@@ -26,16 +29,17 @@ jobs:
 
       - name: Start backend server
         env:
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
-          MONGO_URI: mongodb://localhost:27017/test
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
         run: |
           cd lms-backend
           npm start &
           sleep 10
           curl --fail http://localhost:5001/api/health || exit 1
 
-      # Frontend
       - name: Install frontend dependencies
         run: |
           cd lms-frontend
