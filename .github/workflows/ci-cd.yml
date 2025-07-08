@@ -1,28 +1,18 @@
-name: Basic CI for LMS
+name: CI/CD Pipeline for LMS Frontend and Backend
 
 on:
   push:
-    branches: [staging]
+    branches:
+      - staging
   pull_request:
-    branches: [staging]
+    branches:
+      - staging
 
 jobs:
   check-services:
     runs-on: ubuntu-latest
-    services:
-      mongo:
-        image: mongo:4.4
-        ports:
-          - 27017:27017
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
+
     steps:
-      - name: Debug - Show workspace structure
-        run: |
-          pwd
-          ls -R
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -32,16 +22,10 @@ jobs:
           npm install
 
       - name: Start backend server
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
-          REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
-          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
         run: |
           cd lms-backend
           npm start &
-          sleep 10
+          sleep 15
           curl --fail http://localhost:5001/api/health || exit 1
 
       - name: Install frontend dependencies
@@ -57,6 +41,6 @@ jobs:
       - name: Start frontend server
         run: |
           cd lms-frontend
-          npm start &
-          sleep 10
+          PORT=3000 npm run start &
+          sleep 15
           curl --fail http://localhost:3000 || exit 1
