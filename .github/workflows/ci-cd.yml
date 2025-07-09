@@ -49,6 +49,11 @@ jobs:
           cd lms-frontend
           npm install
 
+      - name: Build frontend
+        run: |
+          cd lms-frontend
+          npm run build
+
       - name: Start frontend server
         run: |
           cd lms-frontend
