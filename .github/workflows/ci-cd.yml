@@ -34,6 +34,9 @@ jobs:
           npm install
 
       - name: Start backend server
+        env:
+          REDIS_HOST: redis-12098.c11.us-east-1-3.ec2.redns.redis-cloud.com
+          REDIS_PORT: 12098
         run: |
           cd lms-backend
           npm start &
