@@ -37,11 +37,12 @@ jobs:
         env:
           REDIS_HOST: redis-12098.c11.us-east-1-3.ec2.redns.redis-cloud.com
           REDIS_PORT: 12098
+          MONGO_URI: mongodb+srv://Klariti:infoKlarity@lms.xh71lmx.mongodb.net/?retryWrites=true&w=majority&appName=lms
         run: |
           cd lms-backend
           npm start &
           sleep 15
-          curl --fail http://localhost:5001/api/health || exit 1
+          curl --fail https://klaritilmstest-39565511862.asia-south2.run.app/api/health || exit 1
 
       - name: Install frontend dependencies
         run: |
