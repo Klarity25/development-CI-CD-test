@@ -59,4 +59,4 @@ jobs:
           cd lms-frontend
           PORT=3000 npm run start &
           sleep 15
-          curl --fail http://localhost:3000 || exit 1
+          curl --fail https://frontendtest-39565511862.asia-south2.run.app || exit 1
