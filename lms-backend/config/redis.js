@@ -2,8 +2,11 @@ const { createClient } = require("redis");
 const logger = require("../utils/logger");
 require("dotenv").config();
 
+const redisUrl = `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`;
+// console.log("Redis connection URL:", redisUrl);
+
 const redisClient = createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+  url: redisUrl,
   socket: {
     reconnectStrategy: (retries) => {
       logger.info(`Redis reconnect attempt ${retries}`);
