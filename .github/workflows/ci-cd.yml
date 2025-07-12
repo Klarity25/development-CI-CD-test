@@ -85,3 +85,58 @@ jobs:
           git checkout main
           git merge origin/staging --no-ff --no-edit
           git push origin main
+
+  check-services-main:
+    needs: deploy-to-main
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main # Check out the main branch after the merge
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Debug - Show workspace structure
+        run: |
+          pwd
+          ls -l
+          ls -l lms-backend || echo "lms-backend not found"
+          ls -l lms-frontend || echo "lms-frontend not found"
+
+      - name: Install backend dependencies
+        run: |
+          cd lms-backend
+          npm install
+
+      - name: Start backend server
+        env:
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+        run: |
+          cd lms-backend
+          npm start &
+          sleep 15
+          curl --fail https://klaritilmstest-39565511862.asia-south2.run.app/api/health || exit 1
+
+      - name: Install frontend dependencies
+        run: |
+          cd lms-frontend
+          npm install
+
+      - name: Build frontend
+        run: |
+          cd lms-frontend
+          npm run build
+
+      - name: Start frontend server
+        run: |
+          cd lms-frontend
+          PORT=3000 npm run start &
+          sleep 15
+          curl --fail https://frontendtest-39565511862.asia-south2.run.app || exit 1
