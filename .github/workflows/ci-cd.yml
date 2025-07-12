@@ -35,9 +35,9 @@ jobs:
 
       - name: Start backend server
         env:
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
-          MONGO_URI: ${{ secrets.MONGO_URI }}
+          REDIS_HOST: redis-12098.c11.us-east-1-3.ec2.redns.redis-cloud.com
+          REDIS_PORT: 12098
+          MONGO_URI: mongodb+srv://Klariti:infoKlarity@lms.xh71lmx.mongodb.net/?retryWrites=true&w=majority&appName=lms
         run: |
           cd lms-backend
           npm start &
@@ -115,9 +115,9 @@ jobs:
 
       - name: Start backend server
         env:
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
-          MONGO_URI: ${{ secrets.MONGO_URI }}
+          REDIS_HOST: redis-12098.c11.us-east-1-3.ec2.redns.redis-cloud.com
+          REDIS_PORT: 12098
+          MONGO_URI: mongodb+srv://Klariti:infoKlarity@lms.xh71lmx.mongodb.net/?retryWrites=true&w=majority&appName=lms
         run: |
           cd lms-backend
           npm start &

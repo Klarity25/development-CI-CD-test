@@ -41,7 +41,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
+// Disable Sentry in CI environment
+const config = process.env.CI ? nextConfig : withSentryConfig(nextConfig, {
   org: 'klariti-lms',
   project: 'lms-sentry-nextjs',
   // Use silent: true to suppress logs in all environments except CI
@@ -53,3 +54,5 @@ export default withSentryConfig(nextConfig, {
   // Reduce bundle size by tree-shaking Sentry logger
   disableLogger: true,
 });
+
+export default config;
